@@ -20,5 +20,11 @@ public class SliderWidget extends Widget {
         // TODO Auto-generated method stub
         return 0;
     }
+
+    @Override
+    public void buildWidget() {
+        // TODO Auto-generated method stub
+        
+    }
     
 }

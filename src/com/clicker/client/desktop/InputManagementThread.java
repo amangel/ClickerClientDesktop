@@ -3,13 +3,25 @@ package com.clicker.client.desktop;
 import java.io.IOException;
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class InputManagementThread.
+ */
 public class InputManagementThread {
     
-
+    
+    /** The thread. */
     Thread thread;
+    
+    /** The thread can run. */
     protected boolean threadCanRun;
+    
+    /** The hub. */
     private CommunicationHub hub;
     
+    /**
+     * Instantiates a new input management thread.
+     */
     public InputManagementThread() {
         threadCanRun = true;
         hub = CommunicationHub.getInstance();
@@ -17,18 +29,30 @@ public class InputManagementThread {
         thread.start();
     }
     
+    /**
+     * Stop.
+     */
     public void stop() {
         threadCanRun = false;
     }
     
+    /**
+     * The Class InputThread.
+     */
     private class InputThread implements Runnable {
         
+        private static final String DEFAULT = "default";
+
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
         @Override
         public void run() {
             String str = "";
             while (threadCanRun) {
                 try {
                     str = hub.readMessage();
+                    System.out.println("received: \n"+str);
                     if (str == null) {
                         hub.gotDisconnected();
                         break;
@@ -41,7 +65,7 @@ public class InputManagementThread {
                         if(input.length >= 1){
                             if(input[0].equals(CommunicationHub.OPEN_COMMAND)){
                                 if(input.length<5){
-                                    color="default";
+                                    color=DEFAULT;
                                 }
                                 else {
                                     color = input[4];
@@ -53,7 +77,7 @@ public class InputManagementThread {
                                 hub.openCustomQuestion(input[1],input[2], input[3], color);
                             } else if(input[0].equals(CommunicationHub.OPEN_CLICKPAD)){
                                 if(input.length<5){
-                                    color="default";
+                                    color=DEFAULT;
                                 }
                                 else {
                                     color = input[4];
@@ -87,7 +111,7 @@ public class InputManagementThread {
                             }
                             else if (input[0].equals(CommunicationHub.INVALID_ADMIN)){
                                 hub.alertUser("You attempted to connect to an invalid administrator." 
-                                            + "\nThe connection was refused.");
+                                        + "\nThe connection was refused.");
                                 hub.closeConnections();
                             }
                             else if (input[0].equals(CommunicationHub.INVALID_INFORMATION)){
@@ -111,6 +135,11 @@ public class InputManagementThread {
         } 
     }
     
+    /**
+     * Checks if is question active.
+     *
+     * @return true, if is question active
+     */
     public boolean isQuestionActive() {
         // TODO Auto-generated method stub
         return false;

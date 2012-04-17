@@ -17,19 +17,55 @@ import javax.swing.JTextField;
 
 
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ClickerClientVisual.
+ */
 public class ClickerClientVisual {
     
+    private static final String ALERT = "Alert";
+
+    private static final String UNGROUPED = "Ungrouped";
+
+    private static final String COMMA_SEPARATOR = "`/,";
+
+    private static final String SEMI_COLON_SEPARATOR = "`/;";
+
+    private static final String DEFAULT_CONNECTION_IP = "134.161.41.198";
+
+    /** The interaction frame. */
     private JFrame interactionFrame;
+    
+    /** The login frame. */
     private JFrame loginFrame;
+    
+    /** The login ip text. */
     private JTextField loginIPText;
+    
+    /** The hub. */
     private CommunicationHub hub;
+    
+    /** The client model. */
     private ClientModel clientModel;
+    
+    /** The login port text. */
     private JTextField loginPortText;
+    
+    /** The admin name text. */
     private JTextField adminNameText;
+    
+    /** The group name text. */
     private JTextField groupNameText;
+    
+    /** The name to use text. */
     private JTextField nameToUseText;
+    
+    /** The group name label. */
     private JLabel groupNameLabel;
     
+    /**
+     * Instantiates a new clicker client visual.
+     */
     public ClickerClientVisual() {
         hub = CommunicationHub.getInstance();
         hub.setVisual(this);
@@ -38,6 +74,9 @@ public class ClickerClientVisual {
         buildInteractionFrame();
     }
     
+    /**
+     * Builds the login frame.
+     */
     private void buildLoginFrame() {
         loginFrame = new JFrame();
         loginFrame.setTitle("ClickerClient");
@@ -70,7 +109,7 @@ public class ClickerClientVisual {
         groupNameText = new JTextField();
         nameToUseText = new JTextField();
         
-        loginIPText.setText("134.161.43.255");
+        loginIPText.setText(DEFAULT_CONNECTION_IP);
         loginPortText.setText("4321");
         adminNameText.setText("frederis");
         groupNameText.setText("");
@@ -118,6 +157,15 @@ public class ClickerClientVisual {
         loginFrame.setVisible(true);
     }
     
+    /**
+     * Do login.
+     *
+     * @param ip the ip
+     * @param port the port
+     * @param admin the admin
+     * @param group the group
+     * @param name the name
+     */
     private void doLogin(String ip, String port, String admin, String group, String name) {
         hub.setLoginInfo(buildLoginString(ip, port, admin, group, name));
         hub.setIp(ip); 
@@ -126,21 +174,41 @@ public class ClickerClientVisual {
         
     }
     
+    /**
+     * Builds the login string.
+     *
+     * @param ip the ip
+     * @param port the port
+     * @param admin the admin
+     * @param group the group
+     * @param name the name
+     * @return the string
+     */
     private String buildLoginString(String ip, String port, String admin, String group, String name) {
         // name`/;mac`/;admin`/,group
         String toReturn = name;
         try {
-            toReturn += "`/;" + NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).getHardwareAddress();
+            toReturn += SEMI_COLON_SEPARATOR + NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).getHardwareAddress();
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        toReturn += "`/;" + admin + "`/," + group;
+        toReturn += SEMI_COLON_SEPARATOR + admin + COMMA_SEPARATOR;
+        if(group.length() == 0) {
+            toReturn += UNGROUPED;
+            clientModel.setGroup(UNGROUPED);
+        } else {
+            toReturn += group;
+            clientModel.setGroup(group);
+        }
         System.out.println(toReturn);
         return toReturn;
     }
     
+    /**
+     * Builds the interaction frame.
+     */
     private void buildInteractionFrame() {
         interactionFrame = new JFrame();
         interactionFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -164,15 +232,26 @@ public class ClickerClientVisual {
         interactionFrame.add(disconnectButton);
     }
 
+    /**
+     * Disconnect from server.
+     */
     protected void disconnectFromServer() {
         hub.closeConnections();
     }
 
+    /**
+     * Alert user.
+     *
+     * @param message the message
+     */
     public void alertUser(String message) {
         JOptionPane.showMessageDialog(interactionFrame, message,
-                "Alert", JOptionPane.WARNING_MESSAGE);
+                ALERT, JOptionPane.WARNING_MESSAGE);
     }
     
+    /**
+     * Redraw.
+     */
     public void redraw() {
         groupNameLabel.setText(clientModel.getGroup());
     }
